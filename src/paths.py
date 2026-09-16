@@ -7,7 +7,7 @@ curriculum modules with progress tracking and completion criteria.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -89,7 +89,7 @@ class LearningPath:
             return False
         step = self._steps[step_id]
         step.completed = True
-        step.completed_at = datetime.now(timezone.utc).isoformat()
+        step.completed_at = datetime.now(UTC).isoformat()
         step.score = max(0.0, min(1.0, score))
         return True
 
