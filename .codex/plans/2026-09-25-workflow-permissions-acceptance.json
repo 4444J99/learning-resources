@@ -1,0 +1,30 @@
+{
+  "schema": "organvm.source_verification_receipt.v1",
+  "observed_at": "2026-09-26T01:39:47Z",
+  "owner": "4444J99/learning-resources#11",
+  "source_head": "9aafd48524d34269233bea0dad8d1f794a4eede9",
+  "scope": "Workflow permission and UTC-alias repair source verification",
+  "checks": [
+    {
+      "command": "python3 -m pytest tests/ -q",
+      "exit_code": 0,
+      "result": "14 passed"
+    },
+    {
+      "command": "python3 -m ruff check src/",
+      "exit_code": 0,
+      "result": "All checks passed"
+    }
+  ],
+  "hosted_readback": {
+    "run": "https://github.com/4444J99/learning-resources/actions/runs/35112184680",
+    "observed_result": "job did not start",
+    "annotation": "The job was not started because your account is locked due to a billing issue.",
+    "interpretation": "Historical runner-admission evidence only; current account, budget, and remedy are unverified until a changed head receives a fresh hosted readback."
+  },
+  "claims_not_made": [
+    "hosted execution passed",
+    "pull request merged",
+    "default branch changed"
+  ]
+}
