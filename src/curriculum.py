@@ -176,8 +176,27 @@ class CurriculumBuilder:
                     "module_id": m.module_id,
                     "title": m.title,
                     "description": m.description,
-                    "prerequisites": m.prerequisites,
+                    "prerequisites": list(m.prerequisites),
                     "topic_count": len(m.topics),
+                    "topics": [
+                        {
+                            "topic_id": t.topic_id,
+                            "title": t.title,
+                            "description": t.description,
+                            "duration_minutes": t.duration_minutes,
+                            "resources": list(t.resources),
+                            "objectives": [
+                                {
+                                    "objective_id": obj.objective_id,
+                                    "description": obj.description,
+                                    "bloom_level": getattr(obj.bloom_level, "value", obj.bloom_level),
+                                    "assessment_criteria": list(obj.assessment_criteria),
+                                }
+                                for obj in t.objectives
+                            ],
+                        }
+                        for t in m.topics
+                    ],
                 }
                 for m in self._modules.values()
             ],
