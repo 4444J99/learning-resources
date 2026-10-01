@@ -189,7 +189,7 @@ class CurriculumBuilder:
                                 {
                                     "objective_id": obj.objective_id,
                                     "description": obj.description,
-                                    "bloom_level": obj.bloom_level,
+                                    "bloom_level": getattr(obj.bloom_level, "value", obj.bloom_level),
                                     "assessment_criteria": list(obj.assessment_criteria),
                                 }
                                 for obj in t.objectives
