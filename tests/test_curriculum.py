@@ -51,3 +51,72 @@ class TestCurriculumBuilder:
         assert data["title"] == "Export Test"
         assert data["domain"] == "tech"
         assert data["module_count"] == 1
+        assert data["modules"][0]["topic_count"] == 0
+        assert data["modules"][0]["topics"] == []
+
+    def test_export_empty_curriculum(self) -> None:
+        builder = CurriculumBuilder("Empty")
+        data = builder.export()
+        assert data["title"] == "Empty"
+        assert data["module_count"] == 0
+        assert data["total_duration_minutes"] == 0
+        assert data["modules"] == []
+
+    def test_export_populated_curriculum_preserves_full_topics_and_objectives(self) -> None:
+        import json
+        from src.curriculum import LearningObjective
+
+        builder = CurriculumBuilder("Populated Test", domain="art")
+        mod = builder.add_module("M1", "First module")
+        topic = builder.add_topic(
+            mod.module_id,
+            "T1",
+            "Topic 1 description",
+            duration_minutes=90,
+            resources=["https://example.com/res1"],
+        )
+        assert topic is not None
+        obj = LearningObjective(
+            objective_id="obj1",
+            description="Understand color theory",
+            bloom_level="understand",
+            assessment_criteria=["Pass quiz"],
+        )
+        topic.objectives.append(obj)
+
+        exported = builder.export()
+
+        # Check JSON serializability
+        json_str = json.dumps(exported)
+        assert json_str is not None
+
+        # Check top-level & module fields
+        assert exported["title"] == "Populated Test"
+        assert exported["domain"] == "art"
+        assert exported["module_count"] == 1
+        assert exported["total_duration_minutes"] == 90
+
+        module_data = exported["modules"][0]
+        assert module_data["module_id"] == mod.module_id
+        assert module_data["title"] == "M1"
+        assert module_data["description"] == "First module"
+        assert module_data["topic_count"] == 1
+
+        # Check nested topic fields
+        topic_data = module_data["topics"][0]
+        assert topic_data["topic_id"] == topic.topic_id
+        assert topic_data["title"] == "T1"
+        assert topic_data["description"] == "Topic 1 description"
+        assert topic_data["duration_minutes"] == 90
+        assert topic_data["resources"] == ["https://example.com/res1"]
+
+        # Check nested objective fields
+        objective_data = topic_data["objectives"][0]
+        assert objective_data["objective_id"] == "obj1"
+        assert objective_data["description"] == "Understand color theory"
+        assert objective_data["bloom_level"] == "understand"
+        assert objective_data["assessment_criteria"] == ["Pass quiz"]
+
+        # Assert export did not mutate builder
+        assert builder.module_count == 1
+        assert len(builder._modules[mod.module_id].topics) == 1
